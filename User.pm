@@ -2,7 +2,7 @@ package Win32::AD::User;
   use strict;
   use Win32::OLE 'in';
   $Win32::OLE::Warn = 3;
-  our $VERSION = '0.01';
+  our $VERSION = '0.02';
 
 ######################################################################
 sub new{
@@ -297,6 +297,7 @@ there is more information on each of the various functions of an
 Win32::AD::User object.
 
 =head2 new();
+
 The new function returns an Win32::AD::User object. The function
 takes 2 scalars; ADS_CONNECT_STRING and USER_REFERENCE_STRING. The
 ADS_CONNECT_STRING can be a valid LDAP or WinNT ADsPath string. More
@@ -305,36 +306,45 @@ Win32::OLE documentation. The USER_REFERENCE_STRING is the username
 of the account you would like to either create or modify.
 
 =head2 print_me();
+
 The print_me function will print the value of all object properties.
 
 =head2 create_new();
+
 The 'create_new' function will create a new user object on the AD
 Server.  The 'new' function does not actualy connect to the AD
 Server either 'create_new or 'get_info' must be used to connect to
 the AD Server properly.
 
 =head2 get_info();
+
 The 'get_info' function will get the user information from the AD
 Server.  The 'new' function does not actualy connect to the AD
 Server either 'create_new or 'get_info' must be used to connect to
 the AD Server properly.
 
-=head2 lock(); The 'lock' function will lock a user account.
+=head2 lock(); 
+
+The 'lock' function will lock a user account.
 
 =head2 un_lock();
+
 The 'un_lock' function will unlock a user account.
 
 =head2 is_locked();
+
 The 'is_locked' function returns '0' if the account is not locked
 and '1' if it is locked.
 
 =head2 set_properties();
+
 The 'set_properties' function will set all properties sent in as
 PROPERTY_HASH. PROPERTY_HASH is a hash where every key is a valid
 ADS_PROPERTY_NAME and that key's value is a valid PROPERTY_VALUE.
 Both of which are defined in the 'set_property' function.
 
 =head2 set_property();
+
 The 'set_property' function will allow you to set any user property.
 The function take two scalars ADS_PROPERTY_NAME, and PROPERTY_VALUE.
 ADS_PROPERTY_NAME is the name of the property as defined in the ADSI
@@ -343,6 +353,7 @@ figuring out which ADS_PROPERTY_NAME you want to use. The
 PROPERTY_VALUE is what you would like to store in AD.
 
 =head2 get_properties();
+
 The 'get_properties' function will return a hash of elements where
 every key is an element from the ADS_PROPERTY_LIST that is sent is
 to the funciton as the only argument. The ADS_PROPERTY_LIST is a
@@ -350,12 +361,14 @@ list of ADS_PROPERTY_NAME elements, as defined in the 'set_property'
 function description.
 
 =head2 get_property();
+
 The 'get_property' function returns a scalar that is the value of
 the ADS_PROPERTY_NAME which is sent in as an argument. The
 ADS_PROPERTY_NAME is defined in the 'set_property' function
 description.
 
 =head2 delete();
+
 The 'delete' function will delete the user object from the AD
 Server.  Note that this will not destroy any other data in the
 Win32::AD::User object, you can recreate user account (without any
@@ -363,25 +376,30 @@ of the previous attiributes) by invoking the 'create_new' function
 after using the 'delete' function.
 
 =head2 set_password();
+
 The 'set_password' function will set the password of the user. This
 function requires one scalar; PASSWORD_STRING. This string is what
 will become the user's password.
 
 =head2 rename();
+
 The 'rename' function will change the user's name from whatever it
 is to the value supplied as USER_REFERENCE_STRING.
 USER_REFERENCE_STRING is defined in the 'new' function description.
 
 =head2 move();
+
 The 'move' function will change the user's location in AD. The
 function requires an ADS_CONNECT_STRING. The ADS_CONNECT_STRING is
 defined in the 'new' function description.
 
 =head2 get_groups();
+
 The 'get_groups' function will return a list of groups of which the
 user is a member.
 
 =head2 add_to_group();
+
 The 'add_to_group' function will add the user to the group specified
 in the ADS_GROUP_STRING.  The ADS_GROUP_STRING is an
 ADS_CONNECT_STRING for a group object. The ADS_CONNECT_STRING is
@@ -391,6 +409,7 @@ ADS_CONNECT_STRING for your user and group (based on the string
 supplied) to perform the user's addition to the group.
 
 =head2 remove_from_group( ADS_GROUP_STRING );
+
 The 'remove_from_group' function will remove the user from the group
 specified in the ADS_GROUP_STRING.  The ADS_GROUP_STRING is an
 ADS_CONNECT_STRING for a group object. The ADS_CONNECT_STRING is

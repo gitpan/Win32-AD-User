@@ -1,10 +1,13 @@
-Win32/AD/User version 0.01
+Win32/AD/User version 0.02
 ==========================
 
 Win32::AD::User will connect to an Active Directory (AD) Server and
-Administer Users. Below there is more information on each of the
-various functions of an AD User object. This module was designed
-to create a useful set of AD User administration tools.
+Administer Users. Information on each of the various functions of an 
+AD User object can be found here:
+  http://www.cns.uni.edu/~thompson/devel/ad-user/index.html
+
+This module was designed to create a useful set of AD User 
+administration tools.
 
 This module has been tested and works on a Win2000 Domain Controller.
 I would be intrested to hear how this works with various AD configs.
