@@ -1,4 +1,16 @@
 Revision history for Perl extension Win32::AD::User.
+0.04  Wed Oct 13 00:17:00 2004
+   - Added  get_ou_member_list function to get a list of 
+     members of a user's OU.
+   - Added warning messages to the new() function to help 
+     users figure out when they are missing one of thier
+     command-line options
+   - Added 'Win32::AD::User --' to the beginning of all 
+     warn statements.
+   - Update documentation for new function, and to include
+     parameter information in the descriptive documentation.
+   - Updated README.
+
 0.03  Thu Jan 15 11:15:00 2004
    - Updated the rename function. A warning would be displayed when 
      renaming a user stating:

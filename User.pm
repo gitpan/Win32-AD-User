@@ -2,12 +2,14 @@ package Win32::AD::User;
   use strict;
   use Win32::OLE 'in';
   $Win32::OLE::Warn = 3;
-  our $VERSION = '0.03';
+  our $VERSION = '0.04';
 
 ######################################################################
 sub new{
   my $class = shift;
   my ($connect_string,$username) = @_;
+  warn "Win32::AD::User -- Warning ADS_CONNECT_STRING not defined.\n"  if(not defined $connect_string);
+  warn "Win32::AD::User -- Warning USER_REFERENCE_STRING not defined.\n" if(not defined $username);
   bless { _connect_string => $connect_string,
           _username       => $username,
           _LDAPAdsPath    => ($connect_string =~ /LDAP/) ? "CN=".$username.",".(split /\//,$connect_string)[3] : undef,
@@ -153,7 +155,7 @@ sub rename{
     $self->get_info();
   }
   else{
-    warn "The 'rename' function is not available when using \n",
+    warn "Win32::AD::User -- The 'rename' function is not available when using \n",
          "a WinNT:// ADsPath... use a LDAP:// ADsPath.\n";
   }#fi
 }
@@ -174,7 +176,7 @@ sub move{
     $self->get_info();
   }
   else{
-    warn "The 'move' function is not available when using \n",
+    warn "Win32::AD::User -- The 'move' function is not available when using \n",
          "a WinNT:// ADsPath... use a LDAP:// ADsPath.\n";
   }#fi
   
@@ -242,6 +244,27 @@ sub remove_from_group{
   }#fi
 }
 
+######################################################################
+sub get_ou_member_list{
+ #Inspiration & Reference:
+ # http://www.rallenhome.com/books/adcookbook/src/05.03-enumerate_children.pls.txt
+  my $self = shift;
+  my ($search_mask) = @_;
+  my @members;
+  my $parent_ou = Win32::OLE->GetObject($self->{_connect_string});
+  if ($self->_connect_type eq "LDAP"){
+    for my $child (in $parent_ou) {
+      push(@members, $child->Name) if (defined $search_mask && $child->Name =~ /$search_mask/);
+      push(@members, $child->Name) if (not defined $search_mask);
+    }#rof 
+  }
+  else{
+    warn "Win32::AD::User - The 'get_ou_member_list' function is not available when using \n",
+         "a WinNT:// ADsPath... use a LDAP:// ADsPath.\n";
+  }#fi
+@members;
+}
+
 1;
 
 __END__
@@ -290,6 +313,8 @@ Win32::AD::User - provides routines for Active Directory user administration.
 
  $user->remove_from_group( ADS_GROUP_STRING );
 
+ $user->get_ou_member_list( SEARCH_MASK );
+
 =head1 ABSTRACT
 
 Administer user in Active Directory using either LDAP or WinNT AdsPath.
@@ -300,7 +325,7 @@ Connect to an Active Directory (AD) Server and Administer Users. Below
 there is more information on each of the various functions of an
 Win32::AD::User object.
 
-=head2 new();
+=head2 new( ADS_CONNECT_STRING, USER_REFERENCE_STRING );
 
 The new function returns an Win32::AD::User object. The function
 takes 2 scalars; ADS_CONNECT_STRING and USER_REFERENCE_STRING. The
@@ -340,14 +365,14 @@ The 'un_lock' function will unlock a user account.
 The 'is_locked' function returns '0' if the account is not locked
 and '1' if it is locked.
 
-=head2 set_properties();
+=head2 set_properties( PROPERTY_HASH );
 
 The 'set_properties' function will set all properties sent in as
 PROPERTY_HASH. PROPERTY_HASH is a hash where every key is a valid
 ADS_PROPERTY_NAME and that key's value is a valid PROPERTY_VALUE.
 Both of which are defined in the 'set_property' function.
 
-=head2 set_property();
+=head2 set_property( ADS_PROPERTY_NAME, PROPERTY_VALUE );
 
 The 'set_property' function will allow you to set any user property.
 The function take two scalars ADS_PROPERTY_NAME, and PROPERTY_VALUE.
@@ -356,7 +381,7 @@ Specification. The ADSI Browser by Toby Everett is a great tool for
 figuring out which ADS_PROPERTY_NAME you want to use. The
 PROPERTY_VALUE is what you would like to store in AD.
 
-=head2 get_properties();
+=head2 get_properties( ADS_PROPERTY_LIST );
 
 The 'get_properties' function will return a hash of elements where
 every key is an element from the ADS_PROPERTY_LIST that is sent is
@@ -364,7 +389,7 @@ to the funciton as the only argument. The ADS_PROPERTY_LIST is a
 list of ADS_PROPERTY_NAME elements, as defined in the 'set_property'
 function description.
 
-=head2 get_property();
+=head2 get_property( ADS_PROPERTY_NAME );
 
 The 'get_property' function returns a scalar that is the value of
 the ADS_PROPERTY_NAME which is sent in as an argument. The
@@ -379,19 +404,19 @@ Win32::AD::User object, you can recreate user account (without any
 of the previous attiributes) by invoking the 'create_new' function
 after using the 'delete' function.
 
-=head2 set_password();
+=head2 set_password( PASSWORD_STRING );
 
 The 'set_password' function will set the password of the user. This
 function requires one scalar; PASSWORD_STRING. This string is what
 will become the user's password.
 
-=head2 rename();
+=head2 rename( USER_REFERENCE_STRING );
 
 The 'rename' function will change the user's name from whatever it
 is to the value supplied as USER_REFERENCE_STRING.
 USER_REFERENCE_STRING is defined in the 'new' function description.
 
-=head2 move();
+=head2 move( ADS_CONNECT_STRING );
 
 The 'move' function will change the user's location in AD. The
 function requires an ADS_CONNECT_STRING. The ADS_CONNECT_STRING is
@@ -402,25 +427,34 @@ defined in the 'new' function description.
 The 'get_groups' function will return a list of groups of which the
 user is a member.
 
-=head2 add_to_group();
+=head2 add_to_group( ADS_GROUP_STRING );
 
 The 'add_to_group' function will add the user to the group specified
 in the ADS_GROUP_STRING.  The ADS_GROUP_STRING is an
 ADS_CONNECT_STRING for a group object. The ADS_CONNECT_STRING is
-defined in the 'new' function description.  If a full
-ADS_GROUP_STRING is given it will attempt to build a WinNT://
-ADS_CONNECT_STRING for your user and group (based on the string
-supplied) to perform the user's addition to the group.
+defined in the 'new' function description.  If a full ADS_GROUP_STRING
+is given it will attempt to build a WinNT:// ADS_CONNECT_STRING for
+your user and group (based on the string supplied) to perform the
+user's addition to the group.
 
 =head2 remove_from_group( ADS_GROUP_STRING );
 
 The 'remove_from_group' function will remove the user from the group
 specified in the ADS_GROUP_STRING.  The ADS_GROUP_STRING is an
 ADS_CONNECT_STRING for a group object. The ADS_CONNECT_STRING is
-defined in the 'new' function description. If a full
-ADS_GROUP_STRING is given it will attempt to build a WinNT://
-ADS_CONNECT_STRING for your user and group (based on the string
-supplied) to perform the user's removal from the group.
+defined in the 'new' function description. If a full ADS_GROUP_STRING
+is given it will attempt to build a WinNT:// ADS_CONNECT_STRING for
+your user and group (based on the string supplied) to perform the
+user's removal from the group.
+
+=head2 get_ou_member_list( SEARCH_MASK );
+
+The 'get_ou_member_list' function will return a list of objects in the
+OU given as your ADS_CONNECT_STRING. Note, this will only work for
+an LDAP:// ADS_CONNECT_STRING. SEARCH_MASK refers to a string that
+will be use to filter the list of objects returned. For example if you
+only are intrested in CN objects use the mask "CN=". The SEARCH_MASK
+is case sensitive.
 
 =head1 AUTHOR
 

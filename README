@@ -4,7 +4,7 @@ Win32/AD/User version 0.02
 Win32::AD::User will connect to an Active Directory (AD) Server and
 Administer Users. Information on each of the various functions of an 
 AD User object can be found here:
-  http://www.cns.uni.edu/~thompson/devel/ad-user/index.html
+  http://www.uni.edu/~prefect/devel/ad-user/index.html
 
 This module was designed to create a useful set of AD User 
 administration tools.
@@ -46,7 +46,7 @@ This module requires these other modules and libraries:
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2003 Aaron Thompson
+Copyright (C) 2003-2004 Aaron Thompson
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
