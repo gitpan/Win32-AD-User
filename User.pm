@@ -2,7 +2,7 @@ package Win32::AD::User;
   use strict;
   use Win32::OLE 'in';
   $Win32::OLE::Warn = 3;
-  our $VERSION = '0.02';
+  our $VERSION = '0.03';
 
 ######################################################################
 sub new{
@@ -145,7 +145,11 @@ sub rename{
   if ($self->_connect_type eq "LDAP"){
     $self->set_property("samAccountName",$new_name);
     $server->MoveHere( join ("/", ("LDAP:/",$self->{_LDAPAdsSvr},$self->{_LDAPAdsPath})),"cn=".$new_name);
-    $self->{$_} =~ s/$old_name/$new_name/g for (keys %$self);
+    for my $key (keys %$self){
+      if ($self->{$key} =~ /$old_name/){
+        $self->{$key} =~ s/$old_name/$new_name/g
+      }#fi 
+    }#rof
     $self->get_info();
   }
   else{

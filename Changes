@@ -1,4 +1,9 @@
 Revision history for Perl extension Win32::AD::User.
+0.03  Thu Jan 15 11:15:00 2004
+   - Updated the rename function. A warning would be displayed when 
+     renaming a user stating:
+       "Use of uninitialized value in substitution (s///)"
+     This warning was fixed.
 
 0.02  Tue Nov 11 10:56:01 2003
 	- Updated documentation and fixed the =head2 formating.
